@@ -51,14 +51,10 @@ namespace TO2GoAPIv2
             services.AddScoped<IAuthManager, AuthManager>();
 
             services.AddSwaggerGen(c => {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "HotelListing", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "TO2GoAPI", Version = "v1" });
             });
 
-            services.AddControllers(config => {
-                config.CacheProfiles.Add("120SecondsDuration", new CacheProfile {
-                    Duration = 120
-                });
-            }).AddNewtonsoftJson(op =>
+            services.AddControllers().AddNewtonsoftJson(op =>
                 op.SerializerSettings.ReferenceLoopHandling =
                     Newtonsoft.Json.ReferenceLoopHandling.Ignore);
         }
@@ -70,7 +66,7 @@ namespace TO2GoAPIv2
             }
 
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "HotelListing v1"));
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TO2GoAPI v1"));
 
             app.ConfigureExceptionHandler();
 

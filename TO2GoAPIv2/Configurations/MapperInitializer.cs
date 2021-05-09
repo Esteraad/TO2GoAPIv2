@@ -16,6 +16,19 @@ namespace TO2GoAPIv2.Configurations
             //CreateMap<Hotel, HotelDTO>().ReverseMap();
             //CreateMap<Hotel, CreateHotelDTO>().ReverseMap();
             CreateMap<ApiUser, UserDTO>().ReverseMap();
+            CreateMap<ApiUser, GetUserDTO>();
+            CreateMap<Game, GameDTO>().ReverseMap();
+            CreateMap<Game, CreateGameDTO>().ReverseMap();
+            CreateMap<Game, UpdateGameDTO>().ReverseMap();
+            CreateMap<GamePlayer, CreateGamePlayerDTO>().ReverseMap();
+            CreateMap<GamePlayer, GamePlayerDTO>().ReverseMap();
+            CreateMap<Move, CreateMoveDTO>().ReverseMap();
+            CreateMap<Move, MoveDTO>().ReverseMap();
+            CreateMap<GameStart, GameStartDTO>().ReverseMap();
+            CreateMap<GameFinish, GameFinishDTO>().ReverseMap();
+            CreateMap<GameWinner, GameWinnerDTO>().ReverseMap();
+
+
 
         }
     }

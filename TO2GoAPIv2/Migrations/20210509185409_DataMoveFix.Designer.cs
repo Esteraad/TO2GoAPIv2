@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TO2GoAPIv2.Data;
 
 namespace TO2GoAPIv2.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20210509185409_DataMoveFix")]
+    partial class DataMoveFix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,15 +50,15 @@ namespace TO2GoAPIv2.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1fe184ec-5549-44d2-b018-9a2479e68d67",
-                            ConcurrencyStamp = "7df927a2-33d7-43c6-aa16-8ff5bd9b59b2",
+                            Id = "f8b54cb2-bee2-4d59-b278-b1e4fdaed5ec",
+                            ConcurrencyStamp = "5380516b-804a-4d4f-a18f-0bb45751a385",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "8e78fb9f-51a8-45f1-9f3e-fef56420358b",
-                            ConcurrencyStamp = "7fe13b5c-52d8-4779-ba80-83ca12fd5080",
+                            Id = "d4e33e4f-0d09-4eb0-a8c3-d37c60e3d39f",
+                            ConcurrencyStamp = "be8e218b-c88a-44a4-9898-9e04864577a0",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         });
@@ -278,9 +280,6 @@ namespace TO2GoAPIv2.Migrations
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("TimeLimit")
                         .HasColumnType("int");

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TO2GoAPIv2.Data;
 
 namespace TO2GoAPIv2.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20210509160702_AddedUniqueIndexToUser")]
+    partial class AddedUniqueIndexToUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,15 +50,15 @@ namespace TO2GoAPIv2.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1fe184ec-5549-44d2-b018-9a2479e68d67",
-                            ConcurrencyStamp = "7df927a2-33d7-43c6-aa16-8ff5bd9b59b2",
+                            Id = "bae99c64-a1e9-4e1e-884a-6390a20f470f",
+                            ConcurrencyStamp = "f6fd4aa9-ed4f-480f-9d4a-2bcfe33499d8",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "8e78fb9f-51a8-45f1-9f3e-fef56420358b",
-                            ConcurrencyStamp = "7fe13b5c-52d8-4779-ba80-83ca12fd5080",
+                            Id = "58c0221f-8c53-40ac-bf1e-a6f0eb7e117c",
+                            ConcurrencyStamp = "fdc8e2b3-0bb6-43c0-b4bd-4bc4d62c45d6",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         });
@@ -279,9 +281,6 @@ namespace TO2GoAPIv2.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("TimeLimit")
                         .HasColumnType("int");
 
@@ -408,8 +407,8 @@ namespace TO2GoAPIv2.Migrations
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
+                    b.Property<short>("Type")
+                        .HasColumnType("smallint");
 
                     b.HasKey("Id");
 

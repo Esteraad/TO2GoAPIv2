@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TO2GoAPIv2.Data;
 
 namespace TO2GoAPIv2.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20210509152455_DataRefactor")]
+    partial class DataRefactor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,15 +50,15 @@ namespace TO2GoAPIv2.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1fe184ec-5549-44d2-b018-9a2479e68d67",
-                            ConcurrencyStamp = "7df927a2-33d7-43c6-aa16-8ff5bd9b59b2",
+                            Id = "b7e292a2-8e13-4c71-99ff-b0ac98aa9bff",
+                            ConcurrencyStamp = "5b2ea918-0b5f-47c9-8159-24c9c1e61025",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "8e78fb9f-51a8-45f1-9f3e-fef56420358b",
-                            ConcurrencyStamp = "7fe13b5c-52d8-4779-ba80-83ca12fd5080",
+                            Id = "f24a43f0-355e-4b95-96ab-35fc260f9732",
+                            ConcurrencyStamp = "890b56bd-a55f-4892-8aca-80c495da62b4",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         });
@@ -192,7 +194,7 @@ namespace TO2GoAPIv2.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Nick")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -222,10 +224,6 @@ namespace TO2GoAPIv2.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Nick")
-                        .IsUnique()
-                        .HasFilter("[Nick] IS NOT NULL");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -279,8 +277,14 @@ namespace TO2GoAPIv2.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("FinishDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Finished")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("TimeLimit")
                         .HasColumnType("int");
@@ -288,27 +292,6 @@ namespace TO2GoAPIv2.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Games");
-                });
-
-            modelBuilder.Entity("TO2GoAPIv2.Data.GameFinish", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("GameId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GameId")
-                        .IsUnique();
-
-                    b.ToTable("GameFinishes");
                 });
 
             modelBuilder.Entity("TO2GoAPIv2.Data.GamePlayer", b =>
@@ -339,28 +322,7 @@ namespace TO2GoAPIv2.Migrations
 
                     b.HasIndex("GameId");
 
-                    b.ToTable("GamePlayers");
-                });
-
-            modelBuilder.Entity("TO2GoAPIv2.Data.GameStart", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("GameId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GameId")
-                        .IsUnique();
-
-                    b.ToTable("GameStarts");
+                    b.ToTable("GamePlayer");
                 });
 
             modelBuilder.Entity("TO2GoAPIv2.Data.GameWinner", b =>
@@ -383,7 +345,7 @@ namespace TO2GoAPIv2.Migrations
                     b.HasIndex("GameId")
                         .IsUnique();
 
-                    b.ToTable("GameWinners");
+                    b.ToTable("GameWinner");
                 });
 
             modelBuilder.Entity("TO2GoAPIv2.Data.Move", b =>
@@ -408,8 +370,8 @@ namespace TO2GoAPIv2.Migrations
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
+                    b.Property<short>("Type")
+                        .HasColumnType("smallint");
 
                     b.HasKey("Id");
 
@@ -488,17 +450,6 @@ namespace TO2GoAPIv2.Migrations
                     b.Navigation("Game");
                 });
 
-            modelBuilder.Entity("TO2GoAPIv2.Data.GameFinish", b =>
-                {
-                    b.HasOne("TO2GoAPIv2.Data.Game", "Game")
-                        .WithOne("GameFinish")
-                        .HasForeignKey("TO2GoAPIv2.Data.GameFinish", "GameId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Game");
-                });
-
             modelBuilder.Entity("TO2GoAPIv2.Data.GamePlayer", b =>
                 {
                     b.HasOne("TO2GoAPIv2.Data.ApiUser", "ApiUser")
@@ -512,17 +463,6 @@ namespace TO2GoAPIv2.Migrations
                         .IsRequired();
 
                     b.Navigation("ApiUser");
-
-                    b.Navigation("Game");
-                });
-
-            modelBuilder.Entity("TO2GoAPIv2.Data.GameStart", b =>
-                {
-                    b.HasOne("TO2GoAPIv2.Data.Game", "Game")
-                        .WithOne("GameStart")
-                        .HasForeignKey("TO2GoAPIv2.Data.GameStart", "GameId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.Navigation("Game");
                 });
@@ -563,11 +503,7 @@ namespace TO2GoAPIv2.Migrations
 
             modelBuilder.Entity("TO2GoAPIv2.Data.Game", b =>
                 {
-                    b.Navigation("GameFinish");
-
                     b.Navigation("GamePlayers");
-
-                    b.Navigation("GameStart");
 
                     b.Navigation("GameWinner");
                 });

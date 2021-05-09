@@ -13,8 +13,13 @@ namespace TO2GoAPIv2.Data
         public DatabaseContext(DbContextOptions options): base(options) {}
         
 
-        //public DbSet<Country> Countries { get; set; }
-        //public DbSet<Hotel> Hotels { get; set; }
+        public DbSet<Game> Games { get; set; }
+        public DbSet<Move> Moves { get; set; }
+        public DbSet<GamePlayer> GamePlayers { get; set; }
+        public DbSet<GameWinner> GameWinners { get; set; }
+        public DbSet<ChatMessage> ChatMessages { get; set; }
+        public DbSet<GameStart> GameStarts { get; set; }
+        public DbSet<GameFinish> GameFinishes { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder) {
@@ -24,6 +29,7 @@ namespace TO2GoAPIv2.Data
             //builder.ApplyConfiguration(new HotelConfiguration());
             builder.ApplyConfiguration(new RoleConfiguration());
 
+            builder.Entity<ApiUser>().HasIndex(u => u.Nick).IsUnique();
         }
     }
 }

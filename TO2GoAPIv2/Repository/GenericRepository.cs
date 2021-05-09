@@ -1,6 +1,5 @@
 ﻿using TO2GoAPIv2.Data;
 using TO2GoAPIv2.IRepository;
-using TO2GoAPIv2.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

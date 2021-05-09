@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TO2GoAPIv2.Data;
 
 namespace TO2GoAPIv2.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20210509205908_AddedGameName")]
+    partial class AddedGameName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,15 +50,15 @@ namespace TO2GoAPIv2.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1fe184ec-5549-44d2-b018-9a2479e68d67",
-                            ConcurrencyStamp = "7df927a2-33d7-43c6-aa16-8ff5bd9b59b2",
+                            Id = "64e4d12d-57f5-4ccd-9aeb-d92fbaf4b41a",
+                            ConcurrencyStamp = "e6d9db86-0f4f-4215-81b0-312c20835bbc",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "8e78fb9f-51a8-45f1-9f3e-fef56420358b",
-                            ConcurrencyStamp = "7fe13b5c-52d8-4779-ba80-83ca12fd5080",
+                            Id = "1684a770-5893-4cd1-b2d9-110722819662",
+                            ConcurrencyStamp = "cc7ede49-48b2-4dd3-ac0b-435da41a3187",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         });
@@ -279,8 +281,8 @@ namespace TO2GoAPIv2.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<short>("Name")
+                        .HasColumnType("smallint");
 
                     b.Property<int>("TimeLimit")
                         .HasColumnType("int");

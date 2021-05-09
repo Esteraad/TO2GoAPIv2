@@ -16,7 +16,7 @@ namespace TO2GoAPIv2
         public static void Main(string[] args) {
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.File(
-                    path: @"c:\hotellistings\logs\log-.txt",
+                    path: @"c:\TO2GoAPI\logs\log-.txt",
                     outputTemplate: "{Timestamp:yyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}",
                     rollingInterval: RollingInterval.Day,
                     restrictedToMinimumLevel: LogEventLevel.Information

@@ -20,11 +20,12 @@ namespace TO2GoAPIv2.Models
 
     public class UserDTO : LoginUserDTO
     {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        [DataType(DataType.PhoneNumber)]
-        public string PhoneNumber { get; set; }
-        public ICollection<string> Roles { get; set; }
+        public string Nick { get; set; }
+    }
 
+    public class GetUserDTO
+    {
+        public string Id { get; set; }
+        public string Nick { get; set; }
     }
 }
