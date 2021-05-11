@@ -39,7 +39,7 @@ namespace TO2GoAPIv2.Repository
             return await query.AsNoTracking().FirstOrDefaultAsync(expression);
         }
 
-        public async Task<IList<T>> GetAll(Expression<Func<T, bool>> expression = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, List<string> includes = null) {
+        public async Task<IList<T>> GetAll(Expression<Func<T, bool>> expression = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, List<string> includes = null, int take = 0) {
             IQueryable<T> query = _db;
             if(expression != null) {
                 query = query.Where(expression);
@@ -55,8 +55,12 @@ namespace TO2GoAPIv2.Repository
                 query = orderBy(query);
             }
 
+            if (take != 0)
+                query = query.Take(take);
+
             return await query.AsNoTracking().ToListAsync();
         }
+
 
         public async Task Insert(T entity) {
             await _db.AddAsync(entity);

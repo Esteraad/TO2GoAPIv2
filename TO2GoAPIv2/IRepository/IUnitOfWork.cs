@@ -13,6 +13,7 @@ namespace TO2GoAPIv2.IRepository
         IGenericRepository<Move> Moves { get; }
         IGenericRepository<GameStart> GameStarts { get; }
         IGenericRepository<GameFinish> GameFinishes { get; }
+        IGenericRepository<ChatMessage> ChatMessages { get; }
 
         Task Save();
     }

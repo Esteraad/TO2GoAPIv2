@@ -66,7 +66,10 @@ namespace TO2GoAPIv2
             }
 
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TO2GoAPI v1"));
+            app.UseSwaggerUI(c => {
+                string swaggerJsonBasePath = string.IsNullOrWhiteSpace(c.RoutePrefix) ? "." : "..";
+                c.SwaggerEndpoint($"{swaggerJsonBasePath}/swagger/v1/swagger.json", "TO2GoAPI v1");
+            });
 
             app.ConfigureExceptionHandler();
 

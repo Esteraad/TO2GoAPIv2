@@ -11,10 +11,6 @@ namespace TO2GoAPIv2.Configurations
     public class MapperInitializer : Profile
     {
         public MapperInitializer() {
-            //CreateMap<Country, CountryDTO>().ReverseMap();
-            //CreateMap<Country, CreateCountryDTO>().ReverseMap();
-            //CreateMap<Hotel, HotelDTO>().ReverseMap();
-            //CreateMap<Hotel, CreateHotelDTO>().ReverseMap();
             CreateMap<ApiUser, UserDTO>().ReverseMap();
             CreateMap<ApiUser, GetUserDTO>();
             CreateMap<Game, GameDTO>().ReverseMap();
@@ -27,8 +23,8 @@ namespace TO2GoAPIv2.Configurations
             CreateMap<GameStart, GameStartDTO>().ReverseMap();
             CreateMap<GameFinish, GameFinishDTO>().ReverseMap();
             CreateMap<GameWinner, GameWinnerDTO>().ReverseMap();
-
-
+            CreateMap<ChatMessage, CreateChatMessageDTO>().ReverseMap();
+            CreateMap<ChatMessage, ChatMessageDTO>().ReverseMap();
 
         }
     }

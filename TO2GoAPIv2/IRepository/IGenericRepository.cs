@@ -12,7 +12,8 @@ namespace TO2GoAPIv2.IRepository
         Task<IList<T>> GetAll(
             Expression<Func<T, bool>> expression = null,
             Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
-            List<string> includes = null
+            List<string> includes = null,
+            int take = 0
         );
         Task<T> Get(Expression<Func<T, bool>> expression, List<string> includes = null);
         Task Insert(T entity);

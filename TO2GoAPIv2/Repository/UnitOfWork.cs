@@ -16,6 +16,7 @@ namespace TO2GoAPIv2.Repository
         private IGenericRepository<Move> moves;
         private IGenericRepository<GameStart> gameStarts;
         private IGenericRepository<GameFinish> gameFinishes;
+        private IGenericRepository<ChatMessage> chatMessages;
         public UnitOfWork(DatabaseContext context) {
             this.context = context;
         }
@@ -25,6 +26,7 @@ namespace TO2GoAPIv2.Repository
         public IGenericRepository<Move> Moves => moves ??= new GenericRepository<Move>(context);
         public IGenericRepository<GameStart> GameStarts => gameStarts ??= new GenericRepository<GameStart>(context);
         public IGenericRepository<GameFinish> GameFinishes => gameFinishes ??= new GenericRepository<GameFinish>(context);
+        public IGenericRepository<ChatMessage> ChatMessages => chatMessages ??= new GenericRepository<ChatMessage>(context);
 
         public void Dispose() {
             context.Dispose();
