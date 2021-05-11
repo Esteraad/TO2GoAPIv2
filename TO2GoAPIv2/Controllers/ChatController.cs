@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using TO2GoAPIv2.Data;
@@ -49,18 +50,18 @@ namespace TO2GoAPIv2.Controllers
             var user = await GetCurrentUser();
             var game = await unitOfWork.Games.Get(q => q.Id == gameId, new List<string> { "GamePlayers", "GameStart", "GameFinish" });
 
-            if(game == null)
-                return Forbid("Game does not exist");
+            if (game == null)
+                return NotFound(gameId);
 
             if (game.GameStart == null)
-                return Forbid("Game has not started yet");
+                return ForbidWMsg(ForbidError.GameNotStartedYet);
 
             if (game.GameFinish != null)
-                return Forbid("Game is already finished");
+                return ForbidWMsg(ForbidError.GameAlreadyFinished);
 
             var isMember = game.GamePlayers.Any(q => q.ApiUserId == user.Id);
             if (isMember == false)
-                return Forbid("You are not a member of that game");
+                return ForbidWMsg(ForbidError.YouAreNotAMember);
 
             var chatMessage = mapper.Map<ChatMessage>(chatMessageDTO);
             chatMessage.Timestamp = DateTime.Now;
@@ -72,7 +73,7 @@ namespace TO2GoAPIv2.Controllers
 
             var result = mapper.Map<ChatMessageDTO>(chatMessage);
 
-            return CreatedAtRoute("GetChatMessage", result);
+            return CreatedAtRoute("GetChatMessage", new { id = result.Id }, result);
         }
 
         [Authorize]
@@ -85,15 +86,15 @@ namespace TO2GoAPIv2.Controllers
             var chatMessage = await unitOfWork.ChatMessages.Get(q => q.Id == id);
 
             if (chatMessage == null)
-                return Forbid("ChatMessage does not exist");
+                return NotFound(id);
 
             var user = await GetCurrentUser();
             var game = await unitOfWork.Games.Get(q => q.Id == chatMessage.GameId, new List<string> { "GamePlayers", "GameStart", "GameFinish" });
 
             var isMember = game.GamePlayers.Any(q => q.ApiUserId == user.Id);
             if (isMember == false)
-                return Forbid("You are not a member of that game");
-            
+                return ForbidWMsg(ForbidError.YouAreNotAMember);
+
             var result = mapper.Map<ChatMessageDTO>(chatMessage);
 
             return Ok(result);
@@ -111,14 +112,14 @@ namespace TO2GoAPIv2.Controllers
             var game = await unitOfWork.Games.Get(q => q.Id == gameId, new List<string> { "GamePlayers", "GameStart", "GameFinish" });
 
             if (game == null)
-                return Forbid("Game does not exist");
+                return NotFound(gameId);
 
             if (game.GameStart == null)
-                return Forbid("Game has not started yet");
+                return ForbidWMsg(ForbidError.GameNotStartedYet);
 
             var isMember = game.GamePlayers.Any(q => q.ApiUserId == user.Id);
             if (isMember == false)
-                return Forbid("You are not a member of that game");
+                return ForbidWMsg(ForbidError.YouAreNotAMember);
 
             var chatMessages = unitOfWork.ChatMessages.GetAll(q => q.GameId == gameId && q.Id > minChatMessageId, includes: new List<string> { "ApiUser" });
             var results = mapper.Map<IList<ChatMessageDTO>>(chatMessages);
@@ -131,6 +132,10 @@ namespace TO2GoAPIv2.Controllers
             ClaimsPrincipal currentUser = User;
             var currentUserName = currentUser.FindFirst(ClaimTypes.Name).Value;
             return await userManager.FindByNameAsync(currentUserName);
+        }
+
+        private ObjectResult ForbidWMsg(ForbidError forbidError) {
+            return StatusCode((int)HttpStatusCode.Forbidden, forbidError);
         }
     }
 }

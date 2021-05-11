@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using TO2GoAPIv2.Data;
@@ -63,7 +64,7 @@ namespace TO2GoAPIv2.Controllers
 
             var result = mapper.Map<GameDTO>(game);
 
-            return CreatedAtRoute("GetGame", result);
+            return CreatedAtRoute("GetGame", new { id = result.Id }, result);
         }
 
 
@@ -85,9 +86,9 @@ namespace TO2GoAPIv2.Controllers
         public async Task<IActionResult> Join(int id) {
             var gamePlayers = await unitOfWork.GamePlayers.GetAll(q => q.GameId == id);
             if (gamePlayers.Count == 0)
-                return Forbid("Game does not exist");
+                return NotFound(id);
             if (gamePlayers.Count != 1)
-                return Forbid("Game full");
+                return ForbidWMsg(ForbidError.GameFull);
 
             var user = await GetCurrentUser();
 
@@ -102,7 +103,9 @@ namespace TO2GoAPIv2.Controllers
             await unitOfWork.GamePlayers.Insert(gamePlayer);
             await unitOfWork.Save();
 
-            return Created("", gamePlayer);
+            var result = mapper.Map<GamePlayerDTO>(gamePlayer);
+
+            return Created("", result);
         }
 
 
@@ -114,9 +117,14 @@ namespace TO2GoAPIv2.Controllers
 
             var user = await GetCurrentUser();
 
-            var gamePlayer = await unitOfWork.GamePlayers.Get(q => q.GameId == gameId && q.ApiUserId == user.Id);
+            var game = await unitOfWork.Games.Get(q => q.Id == gameId, new List<string> { "GamePlayers" });
+
+            if (game == null)
+                return NotFound(gameId);
+
+            var gamePlayer = game.GamePlayers.FirstOrDefault(q => q.ApiUserId == user.Id);
             if (gamePlayer == null)
-                return Forbid("You are not a member of that game or game does not exist");
+                return ForbidWMsg(ForbidError.YouAreNotAMember);
 
             gamePlayer.Ready = true;
             unitOfWork.GamePlayers.Update(gamePlayer);
@@ -137,14 +145,23 @@ namespace TO2GoAPIv2.Controllers
             var game = await unitOfWork.Games.Get(q => q.Id == id, new List<string> { "GamePlayers", "GameStart" });
 
             if (game == null)
-                return Forbid("Game does not exist");
+                return NotFound(id);
+
 
             if (game.GameStart != null)
-                return Forbid("Game has already started");
+                return ForbidWMsg(ForbidError.GameAlreadyStarted);
 
             var isOwner = game.GamePlayers.Any(q => q.ApiUserId == user.Id && q.GameOwner == true);
-            if (isOwner == false)
-                return Forbid("Only game owner can start it");
+            if (!isOwner)
+                return ForbidWMsg(ForbidError.NoPermission);
+
+            if (game.GamePlayers.Count != 2)
+                return ForbidWMsg(ForbidError.NotEnoughPlayers);
+
+            var playersReady = !game.GamePlayers.Any(q => q.GameId == game.Id && q.Ready == false);
+            if (!playersReady)
+                return ForbidWMsg(ForbidError.NotEveryoneIsReady);
+
 
             var gameStart = new GameStart {
                 GameId = id,
@@ -162,6 +179,10 @@ namespace TO2GoAPIv2.Controllers
             ClaimsPrincipal currentUser = User;
             var currentUserName = currentUser.FindFirst(ClaimTypes.Name).Value;
             return await userManager.FindByNameAsync(currentUserName);
+        }
+
+        private ObjectResult ForbidWMsg(ForbidError forbidError) {
+            return StatusCode((int)HttpStatusCode.Forbidden, forbidError);
         }
     }
 }

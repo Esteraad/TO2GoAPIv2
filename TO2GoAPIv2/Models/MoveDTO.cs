@@ -21,7 +21,7 @@ namespace TO2GoAPIv2.Models
         public short PosY { get; set; }
     }
 
-    public class MoveDTO : CreateGameDTO 
+    public class MoveDTO : CreateMoveDTO
     {
         public int Id { get; set; }
         public GetUserDTO ApiUser { get; set; }

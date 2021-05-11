@@ -58,8 +58,8 @@ namespace TO2GoAPIv2.Controllers
                 return Accepted();
             }
             catch (Exception ex) {
-                _logger.LogError(ex, $"Something went wrong int the {nameof(Register)}");
-                return Problem($"Something went wrong int the {nameof(Register)}", statusCode: 500);
+                _logger.LogError(ex, $"Something went wrong in the {nameof(Register)}");
+                return Problem($"Something went wrong in the {nameof(Register)}", statusCode: 500);
             }
         }
 
@@ -83,8 +83,8 @@ namespace TO2GoAPIv2.Controllers
                 return Accepted(new { Token = await _authManager.CreateToken() });
             }
             catch (Exception ex) {
-                _logger.LogError(ex, $"Something went wrong int the {nameof(Login)}");
-                return Problem($"Something went wrong int the {nameof(Login)}", statusCode: 500);
+                _logger.LogError(ex, $"Something went wrong in the {nameof(Login)}");
+                return Problem($"Something went wrong in the {nameof(Login)}", statusCode: 500);
             }
         }
     }
