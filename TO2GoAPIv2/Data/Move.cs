@@ -9,7 +9,8 @@ namespace TO2GoAPIv2.Data
     {
         putStone,
         pass,
-        surrender
+        surrender,
+        capture
     }
 
     public class Move

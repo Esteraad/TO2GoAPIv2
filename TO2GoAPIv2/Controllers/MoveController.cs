@@ -11,7 +11,9 @@ using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using TO2GoAPIv2.Data;
+using TO2GoAPIv2.Exceptions;
 using TO2GoAPIv2.IRepository;
+using TO2GoAPIv2.Logic;
 using TO2GoAPIv2.Models;
 
 namespace TO2GoAPIv2.Controllers
@@ -21,16 +23,18 @@ namespace TO2GoAPIv2.Controllers
     public class MoveController : ControllerBase
     {
         private readonly IUnitOfWork unitOfWork;
+        private readonly IGameBoardsManager gameBoardsManager;
         private readonly UserManager<ApiUser> userManager;
-        private readonly ILogger<AccountController> logger;
+        private readonly ILogger<MoveController> logger;
         private readonly IMapper mapper;
 
         public MoveController(IUnitOfWork unitOfWork, UserManager<ApiUser> userManager,
-            ILogger<AccountController> logger, IMapper mapper) {
+            ILogger<MoveController> logger, IMapper mapper, IGameBoardsManager gameBoardsManager) {
             this.unitOfWork = unitOfWork;
             this.userManager = userManager;
             this.logger = logger;
             this.mapper = mapper;
+            this.gameBoardsManager = gameBoardsManager;
         }
 
         [Authorize]
@@ -76,12 +80,40 @@ namespace TO2GoAPIv2.Controllers
                 return ForbidWMsg(ForbidError.NotYourMove);
             }
 
+            var gameBoard = await gameBoardsManager.GetGameBoard(gameId, unitOfWork, logger);
+            List<Stone> capturedStones = new List<Stone>();
+
+            string blackUserId = game.GamePlayers.FirstOrDefault(u => u.BlackColor).ApiUserId;
+            bool black = user.Id == blackUserId ? true : false;
+            try {
+                if (moveDTO.Type == MoveType.putStone) capturedStones = gameBoard.AddStone(moveDTO.PosX, moveDTO.PosY, black);
+                else if (moveDTO.Type == MoveType.pass) {
+                    if (gameBoard.Pass(black)) await FinishGame(gameId);
+                }
+                else if (moveDTO.Type == MoveType.surrender) await FinishGame(gameId);
+            }
+            catch (ForbidException ex) {
+                return ForbidWMsg(ex.ForbidError);
+            }
+
             var move = mapper.Map<Move>(moveDTO);
             move.Timestamp = DateTime.Now;
             move.GameId = gameId;
             move.ApiUserId = user.Id;
-
             await unitOfWork.Moves.Insert(move);
+
+            foreach(var stone in capturedStones) {
+                var capturedMove = new Move {
+                    GameId = gameId,
+                    PosX = (short)stone.X,
+                    PosY = (short)stone.Y,
+                    Type = MoveType.capture,
+                    Timestamp = DateTime.Now,
+                    ApiUserId = user.Id
+                };
+                await unitOfWork.Moves.Insert(capturedMove);
+            }
+
             await unitOfWork.Save();
 
             var result = mapper.Map<MoveDTO>(move);
@@ -143,6 +175,35 @@ namespace TO2GoAPIv2.Controllers
             return Ok(results);
         }
 
+        [Authorize]
+        [HttpGet("getScore/{gameId:int}")]
+        [ProducesResponseType(StatusCodes.Status202Accepted)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetScore(int gameId) {
+
+            var user = await GetCurrentUser();
+            var game = await unitOfWork.Games.Get(q => q.Id == gameId, new List<string> { "GamePlayers", "GameStart", "GameFinish" });
+
+            if (game == null)
+                return NotFound(gameId);
+
+            if (game.GameStart == null)
+                return ForbidWMsg(ForbidError.GameNotStartedYet);
+
+            var isMember = game.GamePlayers.Any(q => q.ApiUserId == user.Id);
+            if (isMember == false)
+                return ForbidWMsg(ForbidError.YouAreNotAMember);
+
+            var gameBoard = await gameBoardsManager.GetGameBoard(gameId, unitOfWork, logger);
+
+            var result = mapper.Map<ScoreDTO>(gameBoard.GetScore());
+
+            return Ok(result);
+        }
+
+
 
         private async Task<ApiUser> GetCurrentUser() {
             ClaimsPrincipal currentUser = User;
@@ -152,6 +213,17 @@ namespace TO2GoAPIv2.Controllers
 
         private ObjectResult ForbidWMsg(ForbidError forbidError) {
             return StatusCode((int)HttpStatusCode.Forbidden, forbidError);
+        }
+
+
+        private async Task FinishGame(int gameId) {
+            var gameFinish = new GameFinish {
+                GameId = gameId,
+                StartDate = DateTime.Now
+            };
+
+            await unitOfWork.GameFinishes.Insert(gameFinish);
+            await unitOfWork.Save();
         }
     }
 }

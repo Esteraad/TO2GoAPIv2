@@ -49,6 +49,7 @@ namespace TO2GoAPIv2
             services.AddAutoMapper(typeof(MapperInitializer));
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IAuthManager, AuthManager>();
+            services.AddSingleton<IGameBoardsManager, GameBoardsManager>();
 
             services.AddSwaggerGen(c => {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "TO2GoAPI", Version = "v1" });

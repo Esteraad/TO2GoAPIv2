@@ -17,9 +17,9 @@ namespace TO2GoAPIv2.Models
         public static ForbidError GameNotStartedYet { get { return new ForbidError { ErrorCode = 1008, Message = "Game has not started yet" }; } }
         public static ForbidError GameAlreadyFinished { get { return new ForbidError { ErrorCode = 1009, Message = "Game is already finished" }; } }
         public static ForbidError NotYourMove { get { return new ForbidError { ErrorCode = 1009, Message = "Not your move" }; } }
-
-        
-
+        public static ForbidError IncorrectCoords { get { return new ForbidError { ErrorCode = 1010, Message = "Incorrect coordinates" }; } }
+        public static ForbidError PositionNotAvailable { get { return new ForbidError { ErrorCode = 1011, Message = "Position not available" }; } }
+        public static ForbidError KO { get { return new ForbidError { ErrorCode = 1012, Message = "KO" }; } }
 
 
 

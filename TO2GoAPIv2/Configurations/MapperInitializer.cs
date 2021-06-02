@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TO2GoAPIv2.Logic;
 
 namespace TO2GoAPIv2.Configurations
 {
@@ -25,7 +26,8 @@ namespace TO2GoAPIv2.Configurations
             CreateMap<GameWinner, GameWinnerDTO>().ReverseMap();
             CreateMap<ChatMessage, CreateChatMessageDTO>().ReverseMap();
             CreateMap<ChatMessage, ChatMessageDTO>().ReverseMap();
-
+            CreateMap<Stone, StoneDTO>().ReverseMap();
+            CreateMap<Score, ScoreDTO>().ReverseMap();
         }
     }
 }
